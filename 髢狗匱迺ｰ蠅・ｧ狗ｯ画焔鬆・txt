@@ -1,0 +1,35 @@
+laravel用のワーキングディレクトリを用意
+
+そこでダウンロードしたdocker構築zipファイルを展開
+
+ls
+# docker-compose.yml があるのを確認
+$ docker-compose build
+$ docker-compose up -d
+
+# アプリケーションサーバのDockerにに入る
+$ docker-compose exec app bash
+
+# laravelプロジェクトを作成	
+$ composer create-project --prefer-dist laravel/laravel=6.0.* ./
+
+# Laravel設定
+$ composer install
+$ composer update
+$ php artisan key:generate
+$ chmod 777 -R storage
+$ chmod 777 bootstrap/cache
+
+ブラウザで
+localhost
+にアクセス
+Permissionエラーが出る場合は以下コマンド
+cd /work/backend
+chown -R www-data:www-data storage/
+
+ブラウザで
+localhost
+をたたき、laravel6トップページが表示されることを確認
+
+localhost:8080
+をたたき、phpmyadminが表示されることを確認
