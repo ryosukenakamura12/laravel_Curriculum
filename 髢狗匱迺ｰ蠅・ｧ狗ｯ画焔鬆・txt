@@ -7,10 +7,10 @@ ls
 $ docker-compose build
 $ docker-compose up -d
 
-# アプリケーションサーバのDockerにに入る
+# アプリケーションサーバのDockerにに入る ★
 $ docker-compose exec app bash
 
-# laravelプロジェクトを作成	
+# laravelプロジェクトを作成    
 $ composer create-project --prefer-dist laravel/laravel=6.0.* ./
 
 # Laravel設定
