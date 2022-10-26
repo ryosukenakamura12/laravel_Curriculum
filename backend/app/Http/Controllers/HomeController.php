@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use Illuminate\Http\Response;
 use App\shops;
 use App\products;
 
@@ -100,7 +101,15 @@ class HomeController extends Controller
         return redirect()->route('shop_all');
     }
 
+    //オーナーショップ一覧
+    public function shop_owner()
+    {
 
+        $user = \Auth::user();
+        $allshop = null;
+        $allshop = shops::where('user_id', $user['id'])->get();
+        return view('shop_owner',compact('allshop','user'));
+    }
 
 
 
@@ -108,10 +117,32 @@ class HomeController extends Controller
 
     //商品一覧
     public function product_all($id){
+        //オーナー判定
         $user = \Auth::user();
+        $owner = null;
+        $shop_owner = shops::where('id', $id)->first();
+        if($user['id']=$shop_owner['user_id']){
+            $owner = 1;
+        }
         $products = products::where('shop_id', $id)->get();
-        //   dd($products['name']);
-        return view('product_all',compact('products','user','id'));
+        return view('product_all',compact('products','owner','id'));
+
+    }
+
+    //商品詳細
+    public function product_detail($id)
+    {
+
+        $data = products::where('id', $id)->get();
+        $product = $data[0];
+        //オーナー判定
+        $user = \Auth::user();
+        $shop_owner = shops::where('id', $product['shop_id'])->first();
+        if($user['id']=$shop_owner['user_id']){
+            $owner = 1;
+        }
+
+        return view('product_detail',compact('product','owner','id'));
 
     }
 
@@ -175,10 +206,11 @@ class HomeController extends Controller
     {
         $data = $request->all();
         $product = products::where('id', $data['id'])->first();
-        $new_stock = $product['stock']-$data['buy'];
+        $id = $product['id'];
+        $new_stock = $product['stock']-'1';
         $product->stock = $new_stock;
         $product->save();
-        return redirect()->route('shop_all');
+        return redirect()->route('product_detail',compact('id'));
     }
 
     //商品削除
@@ -192,5 +224,31 @@ class HomeController extends Controller
         return redirect()->route('shop_all');
     }
 
-}
+    //商品csv
+    public function product_csv($id)
+    {
+        $product = products::where('id', $id)->first();
+        $stream = fopen('php://temp', 'w');
+        $arr = array('id', 'shop_id','商品名','説明','値段','在庫');
+        fputcsv($stream, $arr);
+         $arrInfo = array(
+            'id' => $product->id,
+            'shop_id' => $product->shop_id,
+            '商品名' => $product->name,
+            '説明' => $product->description,
+            '値段' => $product->price,
+            '在庫' => $product->stock
+         );
 
+        fputcsv($stream, $arrInfo);
+        rewind($stream);
+        $csv = stream_get_contents($stream, -1, 0);
+        $csv = mb_convert_encoding($csv, 'sjis-win', 'UTF-8');
+        fclose($stream);
+        $headers = array(
+            'Content-Type' => 'text/csv',
+            'Content-Disposition' => 'attachment; filename=test.csv'
+        );
+        return Response::make($csv, 200, $headers);
+    }
+}

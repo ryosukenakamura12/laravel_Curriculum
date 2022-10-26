@@ -32,7 +32,7 @@
     </form>
     <form action="/product_delete" method="post">
         @csrf
-        <button type="submit">商品削除</button>
+        <button type="submit">商品削除</button><br><br>
         <input type='hidden' name='id' value="{{ $id }}">
     </form>
     </div>

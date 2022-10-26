@@ -11,9 +11,7 @@
 |
 */
 
-Route::get('/', function () {
-    return view('welcome');
-});
+Route::get('/',  'HomeController@shop_all')->name('shop_all');
 
 
 
@@ -38,6 +36,8 @@ Route::post('/shop_delete', 'HomeController@shop_delete')->name('shop_delete');
 
 Route::post('/shop_delete', 'HomeController@shop_delete')->name('shop_delete');
 
+Route::get('/shop_owner', 'HomeController@shop_owner')->name('shop_owner');
+
 
 
 
@@ -57,3 +57,6 @@ Route::post('/product_buy', 'HomeController@product_buy')->name('product_buy');
 
 Route::post('/product_delete', 'HomeController@product_delete')->name('product_delete');
 
+Route::get('/product_detail/{id}', 'HomeController@product_detail')->name('product_detail');
+
+Route::get('/product_csv/{id}', 'HomeController@product_csv')->name('product_csv');

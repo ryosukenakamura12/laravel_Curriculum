@@ -4,26 +4,23 @@
 <h1 class="card-header">商品一覧</h1>
 <a href="/shop_all"style="margin-left: 5ch">ショップ一覧へ</a>
 <div style="margin: 5ch">
+    @if ($owner=1)
+        <a href="/shop_alt/{{$id}}">ショップ修正</a><br><br>
+    @endif
 
-<a href="/shop_alt/{{$id}}">ショップ修正</a><br><br>
+        @foreach ($products as $product)
+            <a href="/product_detail/{{$product['id']}}" style="font-size: 2em; padding: 2px; margin-bottom: 10px; border: 1px solid #333333;">{{$product['name']}}</a><br>
+            <div>{{$product['description']}}</div><br>
+        @endforeach
 
-
-    @foreach ($products as $product)
-    <h2>{{$product['name']}}</h2>
-    <div>説明・・・{{$product['description']}}</div>
-    <div>値段・・・{{$product['price']}}円</div>
-    <div>残り・・・{{$product['stock']}}コ</div>
-    <form action="/product_buy" method="post">
-        @csrf
-        <input type="number" name="buy">
-        <input type='hidden' name='id' value="{{ $product['id'] }}">
-        <button type="submit">購入</button>
-    </form>
-    <a href="/product_alt/{{$product['id']}}">商品修正</a><br><br>
-    @endforeach
-
-<a href="/product_reg/{{$id}}">商品追加</a><br><br>
-
+    @if ($owner=1)
+        <a href="/product_reg/{{$id}}">商品追加</a><br><br>
+        <form action="/shop_delete" method="post">
+            @csrf
+            <button type="submit">ショップ削除</button>
+            <input type='hidden' name='id' value="{{ $id }}">
+            </form>
+    @endif
 
 
 @endsection
