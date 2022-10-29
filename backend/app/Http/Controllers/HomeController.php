@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use App\shops;
 use App\products;
+use Symfony\Component\HttpFoundation\StreamedResponse;
 
 class HomeController extends Controller
 {
@@ -131,9 +132,9 @@ class HomeController extends Controller
     }
 
     //商品詳細
-    public function product_detail($id)
+    public function product_detail(Request $request)
     {
-
+        $id=$request->id;
         $data = products::where('id', $id)->get();
         $product = $data[0];
 
@@ -228,27 +229,35 @@ class HomeController extends Controller
     }
 
     //商品csv
-    public function product_csv($id)
+    public function product_csv(Request $request)
     {
+        $id=$request->id;
         $product = products::where('id', $id)->first();
-        $product_info = ['id' => $product['id'],'shop_id' => $product['shop_id'],'name' => $product['name'],'description' => $product['description'],'price' => $product['price'],'stock' => $product['stock']];
-        $product_head = ['id','shop_id','商品名','説明','値段','在庫'];
-        $f = fopen('test.csv', 'w');
-        dd($product_info);
-        if ($f) {
-            mb_convert_variables('SJIS', 'UTF-8', $product_head);
-            fputcsv($f, $product_head);
-            foreach ($product_info as $info) {
-               mb_convert_variables('SJIS', 'UTF-8', $info);
-               fputcsv($f, $info);
-            }
-        }
-        fclose($f);
-     header("Content-Type: application/octet-stream");
-     header('Content-Length: '.filesize('test.csv'));
-     header('Content-Disposition: attachment; filename=test.csv');
-     readfile('test.csv');
+        $shop = shops::where('id',$product['shop_id'])->first();
+        $cvsList = [
+            ['ショップ名','商品ID', '商品名', '説明','値段','在庫']
+            , [$shop['name'],$product['id'],$product['name'],$product['description'],$product['price'],$product['stock']]
+       ];
+       $response = new StreamedResponse (function() use ($request, $cvsList){
+           $stream = fopen('php://output', 'w');
 
-     return view('shop_all', compact('product_info'));
+           //　文字化け回避
+           stream_filter_prepend($stream,'convert.iconv.utf-8/cp932//TRANSLIT');
+
+           // CSVデータ
+           foreach($cvsList as $key => $value) {
+               fputcsv($stream, $value);
+           }
+           fclose($stream);
+       });
+       $response->headers->set('Content-Type', 'application/octet-stream');
+       $response->headers->set('Content-Disposition', 'attachment; filename="sample.csv"');
+
+       return $response;
     }
+
+
+
+
+
 }

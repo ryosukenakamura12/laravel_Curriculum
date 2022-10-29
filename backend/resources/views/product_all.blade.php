@@ -9,7 +9,7 @@
     @endif
 
         @foreach ($products as $product)
-            <a href="/product_detail/{{$product['id']}}" style="font-size: 2em; padding: 2px; margin-bottom: 10px; border: 1px solid #333333;">{{$product['name']}}</a><br>
+            <a href="/product_detail?id={{$product['id']}}" style="font-size: 2em; padding: 2px; margin-bottom: 10px; border: 1px solid #333333;">{{$product['name']}}</a><br>
             <div>{{$product['description']}}</div><br>
         @endforeach
 

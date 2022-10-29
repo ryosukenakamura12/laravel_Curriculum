@@ -57,6 +57,6 @@ Route::post('/product_buy', 'HomeController@product_buy')->name('product_buy');
 
 Route::post('/product_delete', 'HomeController@product_delete')->name('product_delete');
 
-Route::get('/product_detail/{id}', 'HomeController@product_detail')->name('product_detail');
+Route::get('/product_detail', 'HomeController@product_detail')->name('product_detail');
 
 Route::get('/product_csv/{id}', 'HomeController@product_csv')->name('product_csv');
