@@ -2,9 +2,9 @@
 @section('content')
 
 <h1 class="card-header">商品一覧</h1>
-<a href="/shop_all"style="margin-left: 5ch">ショップ一覧へ</a>
+
 <div style="margin: 5ch">
-    @if ($owner=1)
+    @if ($owner==1)
         <a href="/shop_alt/{{$id}}">ショップ修正</a><br><br>
     @endif
 
@@ -13,7 +13,7 @@
             <div>{{$product['description']}}</div><br>
         @endforeach
 
-    @if ($owner=1)
+    @if ($owner==1)
         <a href="/product_reg/{{$id}}">商品追加</a><br><br>
         <form action="/shop_delete" method="post">
             @csrf

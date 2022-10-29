@@ -4,7 +4,7 @@
 @section('content')
 <main>
     <h1 class="card-header">ショップ編集　入力フォーム</h1>
-    <a href="/shop_all"style="margin-left: 5ch">ショップ一覧へ</a>
+
     <div style="margin: 5ch">
 
      <form action="/shop_update" method="post">

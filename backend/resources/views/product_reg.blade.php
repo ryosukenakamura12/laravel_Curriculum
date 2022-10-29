@@ -3,7 +3,7 @@
 @section('content')
 <main>
     <h1 class="card-header">商品登録　入力フォーム</h1>
-    <a href="/shop_all"style="margin-left: 5ch">ショップ一覧へ</a>
+
     <div style="margin: 5ch">
 
         <form action="/products" method="post">

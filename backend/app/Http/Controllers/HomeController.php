@@ -118,10 +118,11 @@ class HomeController extends Controller
     //商品一覧
     public function product_all($id){
         //オーナー判定
+        $owner = 0;
         $user = \Auth::user();
         $owner = null;
         $shop_owner = shops::where('id', $id)->first();
-        if($user['id']=$shop_owner['user_id']){
+        if($user['id']==$shop_owner['user_id']){
             $owner = 1;
         }
         $products = products::where('shop_id', $id)->get();
@@ -135,13 +136,15 @@ class HomeController extends Controller
 
         $data = products::where('id', $id)->get();
         $product = $data[0];
+
         //オーナー判定
+        $owner = 0;
         $user = \Auth::user();
         $shop_owner = shops::where('id', $product['shop_id'])->first();
-        if($user['id']=$shop_owner['user_id']){
+
+        if($user['id']==$shop_owner['user_id']){
             $owner = 1;
         }
-
         return view('product_detail',compact('product','owner','id'));
 
     }
@@ -228,27 +231,24 @@ class HomeController extends Controller
     public function product_csv($id)
     {
         $product = products::where('id', $id)->first();
-        $stream = fopen('php://temp', 'w');
-        $arr = array('id', 'shop_id','商品名','説明','値段','在庫');
-        fputcsv($stream, $arr);
-         $arrInfo = array(
-            'id' => $product->id,
-            'shop_id' => $product->shop_id,
-            '商品名' => $product->name,
-            '説明' => $product->description,
-            '値段' => $product->price,
-            '在庫' => $product->stock
-         );
+        $product_info = ['id' => $product['id'],'shop_id' => $product['shop_id'],'name' => $product['name'],'description' => $product['description'],'price' => $product['price'],'stock' => $product['stock']];
+        $product_head = ['id','shop_id','商品名','説明','値段','在庫'];
+        $f = fopen('test.csv', 'w');
+        dd($product_info);
+        if ($f) {
+            mb_convert_variables('SJIS', 'UTF-8', $product_head);
+            fputcsv($f, $product_head);
+            foreach ($product_info as $info) {
+               mb_convert_variables('SJIS', 'UTF-8', $info);
+               fputcsv($f, $info);
+            }
+        }
+        fclose($f);
+     header("Content-Type: application/octet-stream");
+     header('Content-Length: '.filesize('test.csv'));
+     header('Content-Disposition: attachment; filename=test.csv');
+     readfile('test.csv');
 
-        fputcsv($stream, $arrInfo);
-        rewind($stream);
-        $csv = stream_get_contents($stream, -1, 0);
-        $csv = mb_convert_encoding($csv, 'sjis-win', 'UTF-8');
-        fclose($stream);
-        $headers = array(
-            'Content-Type' => 'text/csv',
-            'Content-Disposition' => 'attachment; filename=test.csv'
-        );
-        return Response::make($csv, 200, $headers);
+     return view('shop_all', compact('product_info'));
     }
 }

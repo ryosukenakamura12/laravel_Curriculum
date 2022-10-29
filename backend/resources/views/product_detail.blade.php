@@ -2,7 +2,7 @@
 @section('content')
 
 <h1 class="card-header">商品詳細</h1>
-<a href="/shop_all"style="margin-left: 5ch">ショップ一覧へ</a>
+
 <div style="margin: 5ch">
 
 
@@ -21,7 +21,7 @@
         </form>
         @endif
 
-    @if ($owner=1)
+    @if ($owner==1)
     <a href="/product_alt/{{$product['id']}}">商品修正</a><br><br>
     <form action="/product_delete" method="post">
         @csrf
